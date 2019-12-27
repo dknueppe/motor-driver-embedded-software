@@ -25,5 +25,6 @@ Pin newPin(int num)
 
 void deletePin(Pin self)
 {
+        digitalWrite(self->pin, LOW);
 	free(self);
 }
