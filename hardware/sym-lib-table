@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name hardware-rescue)(type Legacy)(uri ${KIPRJMOD}/hardware-rescue.lib)(options "")(descr ""))
+  (lib (name motor_driver-rescue)(type Legacy)(uri ${KIPRJMOD}/motor_driver-rescue.lib)(options "")(descr ""))
+)
