@@ -1,4 +1,4 @@
-//#include <wiringPi.h>
+#include <wiringPi.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -7,19 +7,21 @@
 
 int main()
 {
-    //wiringPiSetup();
+    wiringPiSetup();
     PWMObservable pwm = newPWMObservable();
-    pwm->frequency = 1;
+    pwm->frequency = 1000;
     pwm->dutyCycle = 20;
     PWMObserver in1 = newPWMObserver(25, false);
-    //PWMObserver in2 = newPWMObserver(26, true);
+    PWMObserver in2 = newPWMObserver(26, true);
+    PWMObserver in3 = newPWMObserver(28, false);
     pwm->clazz->observe((Observable)pwm, (void*)in1);
-    //pwm->clazz->observe((Observable)pwm, (void*)in2);
+    pwm->clazz->observe((Observable)pwm, (void*)in2);
+    pwm->clazz->observe((Observable)pwm, (void*)in3);
     pwm->clazz->start(pwm);
     sleep(5);
     pwm->clazz->join(pwm);
     deletePWMObservable(pwm);
     deletePWMObserver(in1);
-    //deletePWMObserver(in2);
+    deletePWMObserver(in2);
     return 0;
 }
