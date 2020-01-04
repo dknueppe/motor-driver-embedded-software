@@ -3,14 +3,14 @@
 #ifndef PINOBSERVER_H_
 #define PINOBSERVER_H_
 
-#include <sys/time.h>
+#include <time.h>
 #include <semaphore.h>
 #include "CObjects.h"
 #include "Observer.h"
 
 #define PinObserver_ATTRIBUTES \
-    suseconds_t     timediff; \
-    struct timeval  tv; \
+    double          timediff; \
+    struct timespec tv; \
     sem_t          _lock;
 
 #define PinObserver_METHODS \

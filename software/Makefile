@@ -16,7 +16,7 @@ OBJS = 	$(foreach S, $(notdir $(SRCS)), $(BUILD_DIR)/$(basename $(S)).o)
 OBJS += $(LIB_OBJS)
 
 CC = arm-linux-gnueabihf-gcc
-CC_FLAGS = -ggdb3 -Og -std=c99
+CC_FLAGS = -ggdb3 -O3 -std=c99 -fPIC
 LD_FLAGS = -L./WiringPi/wiringPi
 LIBS = wiringPi m crypt rt pthread
 WARNINGS = all extra pedantic cast-align cast-qual disabled-optimization \

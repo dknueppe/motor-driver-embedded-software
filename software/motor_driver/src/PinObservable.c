@@ -7,9 +7,9 @@
 #include "PinObservable.h"
 
 #define USEC_PER_SEC 1000000u
+#define PERIOD 1000
 static void *run(PinObservable self)
 {
-    unsigned int period = 1000;
     int status = 0;
     int tmp;
     bool keep_running = true;
@@ -22,7 +22,7 @@ static void *run(PinObservable self)
             foreach(observer, self->observers)
                 ((Observer)observer)->clazz->update(observer);
         status = tmp;
-        usleep(period);
+        usleep(PERIOD);
     }
     return NULL;
 }

@@ -3,22 +3,22 @@
 
 static void update(PinObserver self)
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
+    struct timespec current_time;
+    clock_gettime(CLOCK_MONOTONIC, &current_time);
     sem_wait(&(self->_lock));
-    self->timediff = tv.tv_usec - self->tv.tv_usec;
-    self->tv = tv;
+    self->timediff = (current_time.tv_sec - self->tv.tv_sec)
+                   + (current_time.tv_nsec - self->tv.tv_nsec)
+                   / 1E9 ;
+    self->tv = current_time;
     sem_post(&(self->_lock));
 }
 
-#define USEC_PER_SEC 1000000
 static float getRPM(PinObserver self)
 {
     sem_wait(&(self->_lock));
-    suseconds_t tmp = self->timediff;
+    double tmp = self->timediff;
     sem_post(&(self->_lock));
-    printf("timediff = %ld", tmp);
-    return  60 * USEC_PER_SEC / tmp;
+    return 60 / tmp;
 }
 
 static PinObserverClass cls = {
