@@ -12,7 +12,7 @@ static void update(PWMObserver self)
 }
 
 static PWMObserverClass cls = {
-    .update = update,
+    .update = (void(*)(Observer))update,
 };
 
 PWMObserver newPWMObserver(int pin, bool status)

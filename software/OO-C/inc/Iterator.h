@@ -21,11 +21,6 @@ DEFINE_BASE_TYPE(Iterator, void)
 
 DEFINE_BASE_TYPE(Iterable, void)
 
-//#define foreach(element, iterator) \
-//    for(void *element; \
-//        (element = iterator->clazz->get_item(iterator)); \
-//        iterator->clazz->next(iterator))
-
 #define foreach(element, iterable) \
     for(void *element, *iter = iterable->clazz->iter(iterable); \
         (element = ((Iterator)iter)->clazz->get_item(iter)); \

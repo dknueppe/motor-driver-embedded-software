@@ -20,7 +20,7 @@ static float getRPM(PinObserver self)
 }
 
 static PinObserverClass cls = {
-    .update = update,
+    .update = (void(*)(Observer))update,
     .getRPM = getRPM,
 };
 
