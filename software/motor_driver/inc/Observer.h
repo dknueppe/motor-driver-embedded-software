@@ -7,10 +7,9 @@
 #include "CObjects.h"
 
 #define Observer_ATTRIBUTES \
-    sem_t _lock;
 
 #define Observer_METHODS \
-    void (*update)(Observer, void *);
+    void (*update)(Observer);
 
 DEFINE_BASE_TYPE(Observer, void)
 

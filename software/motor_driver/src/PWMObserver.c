@@ -1,7 +1,6 @@
 #include <wiringPi.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include "PWMObserver.h"
 
@@ -20,7 +19,7 @@ PWMObserver newPWMObserver(int pin, bool status)
 {
     PWMObserver tmp = malloc(sizeof(*tmp));
     tmp->clazz = &cls;
-    tmp->pin = newPin(pin);
+    tmp->pin = newPin(pin, OUTPUT);
     sem_init(&(tmp->_lock), 0, 1);
     if(!status)
         tmp->pin->clazz->toggle(tmp->pin);

@@ -13,9 +13,8 @@
     sem_t  _lock;
 
 #define PWMObserver_METHODS \
-    void    (*update)(PWMObserver);
 
-//DEFINE_EXTENDED_TYPE(PWMObserver, Observer, int, bool)
-DEFINE_BASE_TYPE(PWMObserver, int, bool)
+DEFINE_EXTENDED_TYPE(PWMObserver, Observer, int, bool)
+//DEFINE_BASE_TYPE(PWMObserver, int, bool)
 
 #endif /* PWMOBSERVER_H_ */

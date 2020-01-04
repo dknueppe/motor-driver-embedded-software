@@ -6,7 +6,7 @@
 #include "CObjects.h"
 #include "Iterator.h"
 #include "PWMObservable.h"
-#include "PWMObserver.h"
+#include "Observer.h"
 
 static void setDutyCycle(PWMObservable self, unsigned int dc)
 {
@@ -34,11 +34,11 @@ static void *run(PWMObservable self)
         on_time = period_us * self->dutyCycle / 100;
         sem_post(&(self->_lock));
         off_time = period_us - on_time;
-        foreach_iterable(observer, self->observers)
-            ((PWMObserver)observer)->clazz->update(observer);
+        foreach(observer, self->observers)
+            ((Observer)observer)->clazz->update(observer);
         usleep(on_time);
-        foreach_iterable(observer, self->observers)
-            ((PWMObserver)observer)->clazz->update(observer);
+        foreach(observer, self->observers)
+            ((Observer)observer)->clazz->update(observer);
         usleep(off_time);
     }
     return NULL;
@@ -61,7 +61,7 @@ static void join(PWMObservable self)
     pthread_join(self->_thread_id, NULL);
 }
 
-PWMObservableClass cls = {
+static PWMObservableClass cls = {
     .setDutyCycle = setDutyCycle,
     .setFrequency = setFrequency,
     .start = start,
