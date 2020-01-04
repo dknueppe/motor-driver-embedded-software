@@ -40,5 +40,6 @@ Pin newPin(int num, int direction)
 
 void deletePin(Pin self)
 {
-    free(self);
+    digitalWrite(self->pin, LOW);
+	free(self);
 }
