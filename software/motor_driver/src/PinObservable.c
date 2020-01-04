@@ -21,6 +21,7 @@ static void *run(PinObservable self)
         if (!status && tmp)
             foreach(observer, self->observers)
                 ((Observer)observer)->clazz->update(observer);
+        status = tmp;
         usleep(period);
     }
     return NULL;
@@ -55,12 +56,16 @@ PinObservable newPinObservable(int pin)
     PinObservable tmp = malloc(sizeof(*tmp));
     tmp->clazz = &cls;
     tmp->pin = newPin(pin, INPUT);
-    sem_init(&(tmp->_lock), 0, 1);
     if (cls.observe == NULL) {
         Observable observable = newObservable();
         memcpy(&cls, observable->clazz, sizeof(*(observable->clazz)));
         deleteObservable(observable);
     }
+    tmp->_is_running = false;
+    tmp->_keep_running = false;
+    tmp->observers = newList();
+    tmp->state = NULL;
+    sem_init(&(tmp->_lock), 0, 1);
     return tmp;
 }
 

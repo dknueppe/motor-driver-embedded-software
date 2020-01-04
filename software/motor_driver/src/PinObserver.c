@@ -6,7 +6,8 @@ static void update(PinObserver self)
     struct timeval tv;
     gettimeofday(&tv, NULL);
     sem_wait(&(self->_lock));
-    self->timediff = tv.tv_usec - (self->tv.tv_usec);
+    self->timediff = tv.tv_usec - self->tv.tv_usec;
+    self->tv = tv;
     sem_post(&(self->_lock));
 }
 
@@ -16,6 +17,7 @@ static float getRPM(PinObserver self)
     sem_wait(&(self->_lock));
     suseconds_t tmp = self->timediff;
     sem_post(&(self->_lock));
+    printf("timediff = %ld", tmp);
     return  60 * USEC_PER_SEC / tmp;
 }
 
