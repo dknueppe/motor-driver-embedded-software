@@ -5,7 +5,7 @@ static void *get_item(Iterator iter)
 {
     ListNode tmp = iter->state;
     if(tmp)
-        return tmp->data; // Datarace
+        return tmp->data; // Datarace when it is shared with multiple iterators.
     deleteIterator(iter);
     return NULL;
 }

@@ -18,7 +18,7 @@ static void *run(PinObservable self)
         keep_running = self->_keep_running;
         sem_post(&(self->_lock));
         tmp = self->pin->clazz->readPin(self->pin);
-        if (!status && tmp)
+        if (status && !tmp)
             foreach(observer, self->observers)
                 ((Observer)observer)->clazz->update(observer);
         status = tmp;
