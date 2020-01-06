@@ -10,8 +10,10 @@ static void toggle(Pin self)
 
 static void setPin(Pin self, int val)
 {
-    if(self->direction == OUTPUT)
+    if(self->direction == OUTPUT){
         digitalWrite(self->pin, val);
+        self->status = val;
+    }
 }
 
 static int readPin(Pin self)

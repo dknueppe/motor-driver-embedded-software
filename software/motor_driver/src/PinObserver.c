@@ -6,9 +6,7 @@
 
 static void update(PinObserver self)
 {
-    sem_wait(&(self->_lock));
-    self->pin->clazz->toggle(self->pin);
-    sem_post(&(self->_lock));
+    //TODO
 }
 
 static PinObserverClass cls = {

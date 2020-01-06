@@ -3,16 +3,12 @@
 
 static void *get_item(Iterator iter)
 {
-    ListNode tmp = iter->state;
-    if(tmp)
-        return tmp->data; // Datarace when it is shared with multiple iterators.
-    deleteIterator(iter);
-    return NULL;
+    //TODO
 }
 
 static void next(Iterator iter)
 {
-    iter->state = ((ListNode)iter->state)->next;
+    //TODO
 }
 
 static IteratorClass iter_cls = {

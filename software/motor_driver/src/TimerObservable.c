@@ -25,25 +25,7 @@ static void setFrequency(TimerObservable self, unsigned int freq)
 #define USEC_PER_SEC 1000000u
 static void *run(TimerObservable self)
 {
-    unsigned int on_time, off_time, period_us;
-    bool keep_running = true;
-    while (keep_running) {
-        sem_wait(&(self->_lock));
-        keep_running = self->_keep_running;
-        period_us = USEC_PER_SEC / self->frequency;
-        on_time = period_us * self->dutyCycle / 100;
-        sem_post(&(self->_lock));
-        off_time = period_us - on_time;
-        foreach(observer, self->observers)
-            ((Observer)observer)->clazz->update(observer);
-        usleep(on_time);
-        if(self->pwm && off_time != 0){
-            foreach(observer, self->observers)
-                ((Observer)observer)->clazz->update(observer);
-            usleep(off_time);
-        }
-    }
-    return NULL;
+    //TODO
 }
 
 static void start(TimerObservable self)
