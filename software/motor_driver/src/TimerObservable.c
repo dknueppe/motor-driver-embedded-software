@@ -5,17 +5,17 @@
 #include <sys/wait.h>
 #include "CObjects.h"
 #include "Iterator.h"
-#include "PWMObservable.h"
+#include "TimerObservable.h"
 #include "Observer.h"
 
-static void setDutyCycle(PWMObservable self, unsigned int dc)
+static void setDutyCycle(TimerObservable self, unsigned int dc)
 {
     sem_wait(&(self->_lock));
     self->dutyCycle = dc;
     sem_post(&(self->_lock));
 }
 
-static void setFrequency(PWMObservable self, unsigned int freq)
+static void setFrequency(TimerObservable self, unsigned int freq)
 {
     sem_wait(&(self->_lock));
     self->frequency = freq;
@@ -23,7 +23,7 @@ static void setFrequency(PWMObservable self, unsigned int freq)
 }
 
 #define USEC_PER_SEC 1000000u
-static void *run(PWMObservable self)
+static void *run(TimerObservable self)
 {
     unsigned int on_time, off_time, period_us;
     bool keep_running = true;
@@ -37,14 +37,16 @@ static void *run(PWMObservable self)
         foreach(observer, self->observers)
             ((Observer)observer)->clazz->update(observer);
         usleep(on_time);
-        foreach(observer, self->observers)
-            ((Observer)observer)->clazz->update(observer);
-        usleep(off_time);
+        if(self->pwm && off_time != 0){
+            foreach(observer, self->observers)
+                ((Observer)observer)->clazz->update(observer);
+            usleep(off_time);
+        }
     }
     return NULL;
 }
 
-static void start(PWMObservable self)
+static void start(TimerObservable self)
 {
     if (self->_is_running)
         return;
@@ -53,7 +55,7 @@ static void start(PWMObservable self)
     pthread_create(&(self->_thread_id), NULL, (void*(*)(void*))run, self);
 }
 
-static void join(PWMObservable self)
+static void join(TimerObservable self)
 {
     sem_wait(&(self->_lock));
     self->_keep_running = false;
@@ -61,7 +63,7 @@ static void join(PWMObservable self)
     pthread_join(self->_thread_id, NULL);
 }
 
-static PWMObservableClass cls = {
+static TimerObservableClass cls = {
     .setDutyCycle = setDutyCycle,
     .setFrequency = setFrequency,
     .start = start,
@@ -69,15 +71,16 @@ static PWMObservableClass cls = {
     .join = join,
 };
 
-PWMObservable newPWMObservable(void)
+TimerObservable newTimerObservable(bool pwm_enable)
 {
-    PWMObservable tmp = malloc(sizeof(*tmp));
+    TimerObservable tmp = malloc(sizeof(*tmp));
     tmp->clazz = &cls;
     if (cls.observe == NULL) {
         Observable observable = newObservable();
         memcpy(&cls, observable->clazz, sizeof(*(observable->clazz)));
         deleteObservable(observable);
     }
+    tmp->pwm = pwm_enable;
     tmp->_is_running = false;
     tmp->_keep_running = false;
     tmp->observers = newList();
@@ -89,7 +92,7 @@ PWMObservable newPWMObservable(void)
     return tmp;
 }
 
-void deletePWMObservable(PWMObservable self)
+void deleteTimerObservable(TimerObservable self)
 {
     deleteList(self->observers);
     sem_destroy(&(self->_lock));

@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include "PWMObservable.h"
-#include "PWMObserver.h"
-#include "PinObservable.h"
+#include "TimerObservable.h"
 #include "PinObserver.h"
+#include "PinObservable.h"
+#include "FreqCounter.h"
 
 /* Pin assignments from motor driver board to wiringPi internals */
 #define INPUT1      3   /* connect YELLOW Wire with physical pin 15 (eigth on the inner row) */
@@ -20,23 +20,23 @@ int main()
     wiringPiSetup();
 
 /* driving the motor */
-    PWMObservable pwm = newPWMObservable();
+    TimerObservable pwm = newTimerObservable(PWM_ENABLE);
     pwm->frequency = 440;
     pwm->dutyCycle = 100;
-    PWMObserver in1 = newPWMObserver(INPUT1, LOW);
-    PWMObserver in2 = newPWMObserver(INPUT2, LOW);
+    PinObserver in1 = newPinObserver(INPUT1, LOW);
+    PinObserver in2 = newPinObserver(INPUT2, LOW);
     pwm->clazz->observe((Observable)pwm, (void*)in1);
     pwm->clazz->start(pwm);
 
 /* setup proximity sensor */
     PinObservable proximity_sensor = newPinObservable(PROX_OUT);
-    PinObserver freq_counter = newPinObserver();
+    FreqCounter freq_counter = newFreqCounter();
     proximity_sensor->clazz->observe((Observable)proximity_sensor, (void*)freq_counter);
     proximity_sensor->clazz->start(proximity_sensor);
 
 /* setup motor current watchdog */
     PinObservable comp_out = newPinObservable(COMP_OUT);
-    PWMObserver enable = newPWMObserver(ENABLE, HIGH);
+    PinObserver enable = newPinObserver(ENABLE, HIGH);
     comp_out->clazz->observe((Observable)comp_out, (void*)enable);
     comp_out->clazz->start(comp_out);
 
@@ -55,12 +55,12 @@ int main()
     pwm->clazz->join(pwm);
     proximity_sensor->clazz->join(proximity_sensor);
     comp_out->clazz->join(comp_out);
-    deletePWMObservable(pwm);
-    deletePWMObserver(in1);
-    deletePWMObserver(in2);
-    deletePWMObserver(enable);
+    deleteTimerObservable(pwm);
+    deletePinObserver(in1);
+    deletePinObserver(in2);
+    deletePinObserver(enable);
     deletePinObservable(proximity_sensor);
     deletePinObservable(comp_out);
-    deletePinObserver(freq_counter);
+    deleteFreqCounter(freq_counter);
     return 0;
 }

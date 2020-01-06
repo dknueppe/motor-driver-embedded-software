@@ -1,41 +1,33 @@
+#include <wiringPi.h>
+#include <sys/wait.h>
 #include <stdlib.h>
+#include <string.h>
 #include "PinObserver.h"
 
 static void update(PinObserver self)
 {
-    struct timespec current_time;
-    clock_gettime(CLOCK_MONOTONIC, &current_time);
     sem_wait(&(self->_lock));
-    self->timediff = (current_time.tv_sec - self->tv.tv_sec)
-                   + (current_time.tv_nsec - self->tv.tv_nsec)
-                   / 1E9 ;
-    self->tv = current_time;
+    self->pin->clazz->toggle(self->pin);
     sem_post(&(self->_lock));
-}
-
-static float getRPM(PinObserver self)
-{
-    sem_wait(&(self->_lock));
-    double tmp = self->timediff;
-    sem_post(&(self->_lock));
-    return 60 / tmp;
 }
 
 static PinObserverClass cls = {
     .update = (void(*)(Observer))update,
-    .getRPM = getRPM,
 };
 
-PinObserver newPinObserver()
+PinObserver newPinObserver(int pin, bool status)
 {
     PinObserver tmp = malloc(sizeof(*tmp));
     tmp->clazz = &cls;
+    tmp->pin = newPin(pin, OUTPUT);
     sem_init(&(tmp->_lock), 0, 1);
+    if(!status)
+        tmp->pin->clazz->toggle(tmp->pin);
     return tmp;
 }
 
-void deletePinObserver(PinObserver self)
-{
+void deletePinObserver(PinObserver self) {
     sem_destroy(&(self->_lock));
+    deletePin(self->pin);
     free(self);
 }
