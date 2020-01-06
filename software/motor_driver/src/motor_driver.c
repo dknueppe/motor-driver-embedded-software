@@ -34,6 +34,12 @@ int main()
     proximity_sensor->clazz->observe((Observable)proximity_sensor, (void*)freq_counter);
     proximity_sensor->clazz->start(proximity_sensor);
 
+/* setup voltage reference for current watchdog */
+    pinMode(COMP_IN, PWM_OUTPUT);
+    pwmSetClock(2);
+    pwmSetRange(10);
+    pwmWrite(1, 2);
+
 /* setup motor current watchdog */
     PinObservable comp_out = newPinObservable(COMP_OUT);
     PinObserver enable = newPinObserver(ENABLE, HIGH);
